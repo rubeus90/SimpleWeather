@@ -3,4 +3,8 @@
 
     <string name="weather_temperature">%1$.0f°F</string>
     <string name="weather_temperature_min_max">Min %1$.0f°F - Max %2$.0f°F</string>
+
+    <string name="weather_empty">Enter a city name to search</string>
+    <string name="weather_fetch_error">Oops ! Something has gone wrong. Please try again</string>
+    <string name="city_name_hint">Example : paris</string>
 </resources>
