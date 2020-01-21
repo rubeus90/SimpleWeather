@@ -18,7 +18,7 @@ class WeatherActivity : AppCompatActivity() {
                 WeatherViewModel::class.java)
 
         weatherViewModel.getCurrentWeather("paris,fr").observe(this, Observer {
-            Log.d("WS request", it.toString())
+            Log.d("WS request", "Status ${it.status} message ${it.message} : ${it.data}")
         })
     }
 }
