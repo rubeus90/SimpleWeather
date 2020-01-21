@@ -5,13 +5,17 @@ import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.*
+import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.rubeus.simpleweather.R
+import com.rubeus.simpleweather.features.weather.SearchViewModel
 import com.rubeus.simpleweather.features.weather.WeatherViewModel
 import com.rubeus.simpleweather.features.weather.model.WeatherForecast
 import com.rubeus.simpleweather.utils.webservice.Result
@@ -26,6 +30,7 @@ class WeatherActivity : AppCompatActivity() {
     private lateinit var emptyView: TextView
 
     private lateinit var weatherViewModel: WeatherViewModel
+    private lateinit var searchViewModel: SearchViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,10 +42,12 @@ class WeatherActivity : AppCompatActivity() {
         errorView = findViewById(R.id.error)
         emptyView = findViewById(R.id.empty)
 
-        recyclerView.layoutManager = LinearLayoutManager(this)
-
         weatherViewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(
             WeatherViewModel::class.java)
+        searchViewModel = ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(application)).get(
+            SearchViewModel::class.java)
+
+        recyclerView.layoutManager = LinearLayoutManager(this)
 
         submitButton.setOnClickListener {
             fetchWeather()
@@ -58,6 +65,11 @@ class WeatherActivity : AppCompatActivity() {
 
         weatherViewModel.getWeatherForecast().observe(this, Observer {
             updateUI(it)
+        })
+
+        searchViewModel.lastSearchData.observe(this, Observer {
+            cityNameField.setText(it)
+            fetchWeather()
         })
     }
 
@@ -93,12 +105,14 @@ class WeatherActivity : AppCompatActivity() {
     }
 
     private fun fetchWeather() {
-        if (cityNameField.text.toString().isNotEmpty()) {
+        val searchRequest = cityNameField.text.toString()
+        if (searchRequest.isNotEmpty()) {
             // Close keyboard
             val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
             imm?.hideSoftInputFromWindow(cityNameField.windowToken, 0)
 
-            weatherViewModel.fetchWeatherForecast(cityNameField.text.toString())
+            weatherViewModel.fetchWeatherForecast(searchRequest)
+            searchViewModel.saveLastSearchData(searchRequest)
         }
     }
 }
