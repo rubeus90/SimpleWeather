@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.rubeus.simpleweather.R
 import com.rubeus.simpleweather.features.weather.model.Weather
 import java.util.*
@@ -38,6 +39,11 @@ class WeatherRecyclerAdapter(private val items: List<Weather>): RecyclerView.Ada
             val weatherOverview = if (itemData.overview.isNotEmpty()) itemData.overview[0] else null
             mainWeatherText.text = weatherOverview?.main
             descriptionText.text = weatherOverview?.description
+            Glide
+                .with(itemView.context)
+                .load("https://openweathermap.org/img/wn/${weatherOverview?.icon}@2x.png")
+                .centerCrop()
+                .into(weatherIcon)
 
             val weatherDetails = itemData.details
             temperatureText.text = itemView.context.resources.getString(
