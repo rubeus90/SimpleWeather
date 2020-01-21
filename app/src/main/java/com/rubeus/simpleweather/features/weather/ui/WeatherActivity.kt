@@ -16,16 +16,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.rubeus.simpleweather.R
 import com.rubeus.simpleweather.features.weather.WeatherViewModel
+import com.rubeus.simpleweather.features.weather.model.WeatherForecast
+import com.rubeus.simpleweather.utils.webservice.Result
 import com.rubeus.simpleweather.utils.webservice.Status
 
 class WeatherActivity : AppCompatActivity() {
-    private lateinit var weatherViewModel: WeatherViewModel
     private lateinit var recyclerView: RecyclerView
     private lateinit var cityNameField: EditText
     private lateinit var submitButton: Button
     private lateinit var loadingView: ProgressBar
     private lateinit var errorView: TextView
     private lateinit var emptyView: TextView
+
+    private lateinit var weatherViewModel: WeatherViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +49,7 @@ class WeatherActivity : AppCompatActivity() {
             fetchWeather()
         }
 
-        cityNameField.setOnEditorActionListener(TextView.OnEditorActionListener { v, actionId, event ->
+        cityNameField.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
             when (actionId) {
                 EditorInfo.IME_ACTION_SEARCH -> {
                     fetchWeather()
@@ -55,38 +58,50 @@ class WeatherActivity : AppCompatActivity() {
                 else -> {return@OnEditorActionListener true}
             }
         })
+
+        weatherViewModel.getWeatherForecast().observe(this, Observer {
+            updateUI(it)
+        })
+    }
+
+    private fun updateUI(data: Result<WeatherForecast>) {
+        when (data.status) {
+            Status.UNKNOWN -> {
+                emptyView.visibility = View.VISIBLE
+                loadingView.visibility = View.GONE
+                errorView.visibility = View.GONE
+                recyclerView.visibility = View.GONE
+            }
+            Status.LOADING -> {
+                emptyView.visibility = View.GONE
+                loadingView.visibility = View.VISIBLE
+                errorView.visibility = View.GONE
+                recyclerView.visibility = View.GONE
+            }
+            Status.SUCCESS -> {
+                if (data.data != null) {
+                    emptyView.visibility = View.GONE
+                    loadingView.visibility = View.GONE
+                    recyclerView.visibility = View.VISIBLE
+                    recyclerView.adapter = WeatherRecyclerAdapter(data.data.list)
+                }
+            }
+            Status.ERROR -> {
+                emptyView.visibility = View.GONE
+                loadingView.visibility = View.GONE
+                errorView.visibility = View.VISIBLE
+                recyclerView.visibility = View.GONE
+            }
+        }
     }
 
     private fun fetchWeather() {
         if (cityNameField.text.toString().isNotEmpty()) {
-            // Clear the welcome text
-            emptyView.visibility = View.GONE
-
             // Close keyboard
             val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
             imm?.hideSoftInputFromWindow(cityNameField.windowToken, 0)
 
-            weatherViewModel.getCurrentWeather(cityNameField.text.toString()).observe(this, Observer {
-                when (it.status) {
-                    Status.LOADING -> {
-                        loadingView.visibility = View.VISIBLE
-                        errorView.visibility = View.GONE
-                        recyclerView.visibility = View.GONE
-                    }
-                    Status.SUCCESS -> {
-                        if (it.data != null) {
-                            loadingView.visibility = View.GONE
-                            recyclerView.visibility = View.VISIBLE
-                            recyclerView.adapter = WeatherRecyclerAdapter(it.data.list)
-                        }
-                    }
-                    Status.ERROR -> {
-                        loadingView.visibility = View.GONE
-                        errorView.visibility = View.VISIBLE
-                        recyclerView.visibility = View.GONE
-                    }
-                }
-            })
+            weatherViewModel.fetchWeatherForecast(cityNameField.text.toString())
         }
     }
 }

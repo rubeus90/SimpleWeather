@@ -2,6 +2,10 @@ package com.rubeus.simpleweather.utils.webservice
 
 class Result<T>(val status: Status, val data: T?, val message: String?) {
     companion object {
+        fun <T> clear(): Result<T> {
+            return Result(Status.UNKNOWN, null, null)
+        }
+
         fun <T> success(data: T?): Result<T> {
             return Result(Status.SUCCESS, data, null)
         }
