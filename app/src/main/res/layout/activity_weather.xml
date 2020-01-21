@@ -10,35 +10,49 @@
         android:id="@+id/weatherList"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cityName" />
+        app:layout_constraintTop_toBottomOf="@+id/searchBar" />
 
-    <EditText
-        android:id="@+id/cityName"
-        android:hint="@string/city_name_hint"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/searchBar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:ems="10"
-        android:inputType="textPostalAddress"
-        app:layout_constraintEnd_toStartOf="@+id/submitButton"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:singleLine="true"
-        android:imeOptions="actionSearch"/>
+        android:background="@drawable/city_name_field_background"
+        android:layout_margin="16dp">
 
-    <Button
-        android:id="@+id/submitButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:text="Button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <EditText
+            android:id="@+id/cityName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:backgroundTint="@android:color/transparent"
+            android:ems="10"
+            android:hint="@string/city_name_hint"
+            android:imeOptions="actionSearch"
+            android:inputType="textPostalAddress"
+            android:singleLine="true"
+            app:layout_constraintEnd_toStartOf="@+id/submitButton"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <ImageButton
+            android:id="@+id/submitButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="8dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_action_search"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ProgressBar
         android:id="@+id/loading"
@@ -48,7 +62,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/weatherList"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cityName"
+        app:layout_constraintTop_toBottomOf="@id/searchBar"
         android:visibility="gone"
         tools:visibility="visible"/>
 
@@ -60,7 +74,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cityName"
+        app:layout_constraintTop_toBottomOf="@id/searchBar"
         android:visibility="gone"
         tools:visibility="visible"/>
 
@@ -72,6 +86,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cityName"/>
+        app:layout_constraintTop_toBottomOf="@id/searchBar"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
