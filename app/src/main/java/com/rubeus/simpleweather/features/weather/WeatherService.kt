@@ -6,9 +6,9 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface WeatherService {
-    @GET("forecast")
+    @GET("forecast?units=metric")
     suspend fun getForecastByCityName(@Query("q") city: String): Response<WeatherForecast>
 
-    @GET("forecast")
+    @GET("forecast?units=metric")
     suspend fun getForecastByCityId(@Query("id") cityId: Int): Response<WeatherForecast>
 }
