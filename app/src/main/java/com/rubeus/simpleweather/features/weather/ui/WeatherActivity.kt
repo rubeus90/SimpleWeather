@@ -18,8 +18,7 @@ import com.rubeus.simpleweather.R
 import com.rubeus.simpleweather.features.weather.SearchViewModel
 import com.rubeus.simpleweather.features.weather.WeatherViewModel
 import com.rubeus.simpleweather.features.weather.model.WeatherForecast
-import com.rubeus.simpleweather.utils.webservice.Result
-import com.rubeus.simpleweather.utils.webservice.Status
+import com.rubeus.simpleweather.utils.webservice.*
 
 class WeatherActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
@@ -73,29 +72,31 @@ class WeatherActivity : AppCompatActivity() {
         })
     }
 
-    private fun updateUI(data: Result<WeatherForecast>) {
-        when (data.status) {
-            Status.UNKNOWN -> {
+    private fun updateUI(result: Result) {
+        when (result) {
+            Unknown -> {
                 emptyView.visibility = View.VISIBLE
                 loadingView.visibility = View.GONE
                 errorView.visibility = View.GONE
                 recyclerView.visibility = View.GONE
             }
-            Status.LOADING -> {
+            Loading -> {
                 emptyView.visibility = View.GONE
                 loadingView.visibility = View.VISIBLE
                 errorView.visibility = View.GONE
                 recyclerView.visibility = View.GONE
             }
-            Status.SUCCESS -> {
-                if (data.data != null) {
+            is Success<*> -> {
+                result.data?.let {
                     emptyView.visibility = View.GONE
                     loadingView.visibility = View.GONE
                     recyclerView.visibility = View.VISIBLE
-                    recyclerView.adapter = WeatherRecyclerAdapter(data.data.list)
+
+                    val forecast = result.data as WeatherForecast
+                    recyclerView.adapter = WeatherRecyclerAdapter(forecast.list)
                 }
             }
-            Status.ERROR -> {
+            is Error -> {
                 emptyView.visibility = View.GONE
                 loadingView.visibility = View.GONE
                 errorView.visibility = View.VISIBLE

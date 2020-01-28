@@ -1,21 +1,8 @@
 package com.rubeus.simpleweather.utils.webservice
 
-class Result<T>(val status: Status, val data: T?, val message: String?) {
-    companion object {
-        fun <T> clear(): Result<T> {
-            return Result(Status.UNKNOWN, null, null)
-        }
+sealed class Result
 
-        fun <T> success(data: T?): Result<T> {
-            return Result(Status.SUCCESS, data, null)
-        }
-
-        fun <T> error(msg: String): Result<T> {
-            return Result(Status.ERROR, null, msg)
-        }
-
-        fun <T> loading(): Result<T> {
-            return Result(Status.LOADING, null, null)
-        }
-    }
-}
+data class Success<T>(val data: T): Result()
+data class Error(val exception: Exception): Result()
+object Loading: Result()
+object Unknown: Result()
