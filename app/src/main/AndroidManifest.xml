@@ -28,6 +28,10 @@
             <meta-data android:name="android.app.default_searchable"
                 android:value=".features.weather.ui.WeatherActivity" />
         </activity>
+
+        <provider android:name=".features.search.SearchSuggestionsProvider"
+            android:authorities="com.rubeus.simpleweather.features.search.SearchSuggestionsProvider"
+            android:exported="false" />
     </application>
 
 </manifest>

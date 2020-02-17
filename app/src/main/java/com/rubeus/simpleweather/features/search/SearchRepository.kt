@@ -1,4 +1,4 @@
-package com.rubeus.simpleweather.features.weather
+package com.rubeus.simpleweather.features.search
 
 import android.content.Context
 import androidx.preference.PreferenceManager

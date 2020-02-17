@@ -4,6 +4,7 @@ import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.provider.SearchRecentSuggestions
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ProgressBar
@@ -15,7 +16,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.rubeus.simpleweather.R
-import com.rubeus.simpleweather.features.weather.SearchViewModel
+import com.rubeus.simpleweather.features.search.SearchSuggestionsProvider
+import com.rubeus.simpleweather.features.search.SearchViewModel
 import com.rubeus.simpleweather.features.weather.WeatherViewModel
 import com.rubeus.simpleweather.features.weather.model.WeatherForecast
 import com.rubeus.simpleweather.utils.webservice.*
@@ -39,26 +41,9 @@ class WeatherActivity : AppCompatActivity() {
         errorView = findViewById(R.id.error)
         emptyView = findViewById(R.id.empty)
 
-        weatherViewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(
-            WeatherViewModel::class.java)
-        searchViewModel = ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(application)).get(
-            SearchViewModel::class.java)
 
-        recyclerView.layoutManager = LinearLayoutManager(this)
-
-
-        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
-        searchField.apply {
-            setSearchableInfo(searchManager.getSearchableInfo(componentName))
-        }
-
-        weatherViewModel.getWeatherForecast().observe(this, Observer {
-            updateUI(it)
-        })
-
-        searchViewModel.lastSearchData.observe(this, Observer {
-            searchField.setQuery(it, true)
-        })
+        initSearch()
+        initWeather()
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -68,6 +53,33 @@ class WeatherActivity : AppCompatActivity() {
                 fetchWeather(query)
             }
         }
+    }
+
+    private fun initSearch() {
+        // Configure search manager which provides search suggestions based on recent search queries
+        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        searchField.apply {
+            setSearchableInfo(searchManager.getSearchableInfo(componentName))
+        }
+
+        // Init the search field with last search query (if applicable) on app launch
+        searchViewModel = ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(application)).get(
+            SearchViewModel::class.java)
+        searchViewModel.lastSearchData.observe(this, Observer {
+            searchField.setQuery(it, true)
+        })
+    }
+
+    private fun initWeather() {
+        // Init layout manager to display the weather list
+        recyclerView.layoutManager = LinearLayoutManager(this)
+
+        // Observe weather data and update the UI accordingly
+        weatherViewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(
+            WeatherViewModel::class.java)
+        weatherViewModel.getWeatherForecast().observe(this, Observer {
+            updateUI(it)
+        })
     }
 
     private fun updateUI(result: Result) {
@@ -111,6 +123,9 @@ class WeatherActivity : AppCompatActivity() {
 
             weatherViewModel.fetchWeatherForecast(query)
             searchViewModel.saveLastSearchData(query)
+
+            SearchRecentSuggestions(this, SearchSuggestionsProvider.AUTHORITY, SearchSuggestionsProvider.MODE)
+                .saveRecentQuery(query, null)
         }
     }
 }
