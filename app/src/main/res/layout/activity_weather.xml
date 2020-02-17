@@ -10,50 +10,30 @@
         android:id="@+id/weatherList"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchBar" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:paddingTop="76dp"
+        android:clipToPadding="false"/>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/searchBar"
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/search"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="16dp"
+        android:ems="10"
+        android:hint="@string/search_hint"
+        android:imeOptions="actionSearch"
+        android:inputType="textPostalAddress"
+        android:singleLine="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:iconifiedByDefault="false"
         android:background="@drawable/city_name_field_background"
-        android:layout_margin="16dp"
-        app:layout_constraintWidth_max="600dp">
-
-        <EditText
-            android:id="@+id/cityName"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:backgroundTint="@android:color/transparent"
-            android:ems="10"
-            android:hint="@string/city_name_hint"
-            android:imeOptions="actionSearch"
-            android:inputType="textPostalAddress"
-            android:singleLine="true"
-            app:layout_constraintEnd_toStartOf="@+id/submitButton"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
-
-        <ImageButton
-            android:id="@+id/submitButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginEnd="8dp"
-            android:background="@android:color/transparent"
-            android:src="@drawable/ic_action_search"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        app:queryBackground="@android:color/transparent"
+        app:layout_constraintWidth_max="600dp" />
 
     <ProgressBar
         android:id="@+id/loading"
@@ -63,7 +43,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/weatherList"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/searchBar"
+        app:layout_constraintTop_toBottomOf="@id/search"
         android:visibility="gone"
         tools:visibility="visible"/>
 
@@ -78,7 +58,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/searchBar"
+        app:layout_constraintTop_toBottomOf="@id/search"
         tools:visibility="visible"
         android:textAlignment="center"/>
 
@@ -92,7 +72,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/searchBar"
+        app:layout_constraintTop_toBottomOf="@id/search"
         android:textAlignment="center" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

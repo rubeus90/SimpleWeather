@@ -5,5 +5,5 @@
 
     <string name="weather_empty">Enter a city name to search</string>
     <string name="weather_fetch_error">Oops ! Something has gone wrong.\nPlease check your internet connection or the spelling of your search.</string>
-    <string name="city_name_hint">Example : toronto</string>
+    <string name="search_hint">Example : toronto</string>
 </resources>

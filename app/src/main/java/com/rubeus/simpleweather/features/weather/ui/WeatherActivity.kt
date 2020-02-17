@@ -1,15 +1,15 @@
 package com.rubeus.simpleweather.features.weather.ui
 
+import android.app.SearchManager
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
-import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,8 +22,7 @@ import com.rubeus.simpleweather.utils.webservice.*
 
 class WeatherActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
-    private lateinit var cityNameField: EditText
-    private lateinit var submitButton: ImageButton
+    private lateinit var searchField: SearchView
     private lateinit var loadingView: ProgressBar
     private lateinit var errorView: TextView
     private lateinit var emptyView: TextView
@@ -35,8 +34,7 @@ class WeatherActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_weather)
         recyclerView = findViewById(R.id.weatherList)
-        cityNameField = findViewById(R.id.cityName)
-        submitButton = findViewById(R.id.submitButton)
+        searchField = findViewById(R.id.search)
         loadingView = findViewById(R.id.loading)
         errorView = findViewById(R.id.error)
         emptyView = findViewById(R.id.empty)
@@ -48,28 +46,28 @@ class WeatherActivity : AppCompatActivity() {
 
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        submitButton.setOnClickListener {
-            fetchWeather()
-        }
 
-        cityNameField.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
-            when (actionId) {
-                EditorInfo.IME_ACTION_SEARCH -> {
-                    fetchWeather()
-                    return@OnEditorActionListener true
-                }
-                else -> {return@OnEditorActionListener true}
-            }
-        })
+        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        searchField.apply {
+            setSearchableInfo(searchManager.getSearchableInfo(componentName))
+        }
 
         weatherViewModel.getWeatherForecast().observe(this, Observer {
             updateUI(it)
         })
 
         searchViewModel.lastSearchData.observe(this, Observer {
-            cityNameField.setText(it)
-            fetchWeather()
+            searchField.setQuery(it, true)
         })
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        if (Intent.ACTION_SEARCH == intent?.action) {
+            intent.getStringExtra(SearchManager.QUERY)?.also { query ->
+                fetchWeather(query)
+            }
+        }
     }
 
     private fun updateUI(result: Result) {
@@ -105,15 +103,14 @@ class WeatherActivity : AppCompatActivity() {
         }
     }
 
-    private fun fetchWeather() {
-        val searchRequest = cityNameField.text.toString()
-        if (searchRequest.isNotEmpty()) {
+    private fun fetchWeather(query: String) {
+        if (query.isNotEmpty()) {
             // Close keyboard
             val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-            imm?.hideSoftInputFromWindow(cityNameField.windowToken, 0)
+            imm?.hideSoftInputFromWindow(searchField.windowToken, 0)
 
-            weatherViewModel.fetchWeatherForecast(searchRequest)
-            searchViewModel.saveLastSearchData(searchRequest)
+            weatherViewModel.fetchWeatherForecast(query)
+            searchViewModel.saveLastSearchData(query)
         }
     }
 }
